@@ -1,0 +1,66 @@
+version: '3.0'
+services:
+  redis:
+    image: redis:alpine
+    container_name: notes-tool-redis
+    network_mode: bridge
+
+  db:
+    image: mariadb:10.1
+    container_name: notes-tool-mariadb
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --innodb-file-format=Barracuda, --innodb-large-prefix=1]
+    volumes:
+      - woche-pass-database:/var/lib/mysql
+    network_mode: bridge
+    environment:
+      - MYSQL_ROOT_PASSWORD=ROOT
+      - MYSQL_DATABASE=pimcore
+      - MYSQL_USER=pimcore
+      - MYSQL_PASSWORD=pimcore
+
+  adminer:
+    image: adminer
+    container_name: notes-tool-adminer
+    restart: always
+    volumes:
+      - .docker/php/php-ini-overrides.ini:/usr/local/etc/php/conf.d/uploads.ini
+    ports:
+      - 2001:8080
+    links:
+      - db:db
+    network_mode: bridge
+
+  php:
+    image: dpfaffenbauer/pimcore:PHP7.2-apache
+    container_name: notes-tool-php
+    volumes:
+      - ~/.composer:/root/composer
+      - .:/var/www/html:cached
+      - .docker/php/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+    ports:
+      - "2000:80"
+    links:
+     - db:db
+     - redis:redis
+    network_mode: bridge
+#    external_links:
+#      - jjk-api-platform-php:jjk-api
+#    environment:
+#      JJK_API: 'http://jjk-api/api/'
+
+  php-debug:
+    image: dpfaffenbauer/pimcore:PHP7.2-apache-debug
+    container_name: notes-tool-php-debug
+    volumes:
+      - ~/.composer:/root/composer
+      - .:/var/www/html:cached
+      - .docker/php/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+    ports:
+      - "2006:80"
+    links:
+      - db:db
+      - redis:redis
+    network_mode: bridge
+
+volumes:
+  woche-pass-database:

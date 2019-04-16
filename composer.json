@@ -1,0 +1,24 @@
+{
+  "name": "w-vision/acissej",
+  "description": "Notes and collection",
+  "type": "project",
+  "license": "GPL-3.0+",
+  "authors": [
+    {
+      "name": "Jessica Fellmann",
+      "email": "j.fellmann@woche-pass.ch",
+      "homepage": "https://www.w-vision.ch/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "twig/twig": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Acissej\\Model\\": "acissej/models",
+      "Acissej\\": "acissej/lib/Acissej",
+      "Website\\": "web/lib/Website"
+    }
+  }
+}
